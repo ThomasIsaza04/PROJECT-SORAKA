@@ -1,0 +1,30 @@
+services:
+  # Servicio que compilará y ejecutará la API de Python
+  backend:
+    build:
+      context: ./backend
+      dockerfile: dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://usuario:password@pooled.db.prisma.io:5432/postgres
+    networks:
+      - soraka-network
+
+  # Servicio para la interfaz de usuario en React
+  frontend:
+    image: node:18-alpine
+    working_dir: /app
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+    command: sh -c "npm install && npm start"
+    networks:
+      - soraka-network
+    depends_on:
+      - backend
+
+networks:
+  soraka-network:
+    driver: bridge
